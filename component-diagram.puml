@@ -1,0 +1,85 @@
+@startuml
+left to right direction
+
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontSize 10
+skinparam componentStyle rectangle
+
+package "Зовнішні Сервіси" {
+  component "Backend API" as BackendAPI
+  database "File Storage" as Storage
+}
+
+package "Next.js Застосунок" {
+  component "App Component" as App
+  component "Auth Provider" as AuthProvider
+  component "Theme Provider" as ThemeProvider
+}
+
+package "Сторінки" {
+  component "Login Page" as LoginPage
+  component "Annotations List Page" as ListPage
+  component "New Annotation Page" as NewPage
+  component "Annotation Detail Page" as DetailPage
+}
+
+package "Екранні Компоненти" {
+  component "Login Screen" as LoginScreen
+  component "List Screen" as ListScreen
+  component "New Screen" as NewScreen
+  component "Detail Screen" as DetailScreen
+}
+
+package "API Сервіси" {
+  component "User API" as UserApi
+  component "Annotation API" as AnnotationApi
+  component "API Config" as ApiConfig
+}
+
+package "UI Компоненти" {
+  component "Audio Player" as AudioPlayer
+  component "Material UI" as MUI
+}
+
+package "Управління Станом" {
+  component "Cookies" as Cookies
+}
+
+App ..> AuthProvider : використовує
+App ..> ThemeProvider : використовує
+
+LoginPage ..> LoginScreen : рендерить
+ListPage ..> ListScreen : рендерить
+NewPage ..> NewScreen : рендерить
+DetailPage ..> DetailScreen : рендерить
+
+LoginScreen ..> AuthProvider : useAuth
+LoginScreen ..> UserApi : автентифікує
+LoginScreen ..> MUI : використовує
+
+ListScreen ..> AuthProvider : useAuth
+ListScreen ..> AnnotationApi : отримує
+ListScreen ..> MUI : використовує
+
+NewScreen ..> AnnotationApi : створює
+NewScreen ..> MUI : використовує
+
+DetailScreen ..> AnnotationApi : CRUD
+DetailScreen ..> AudioPlayer : відтворює TTS
+DetailScreen ..> MUI : використовує
+
+AuthProvider ..> UserApi : вхід/реєстрація
+AuthProvider ..> Cookies : зберігає токен
+
+UserApi ..> ApiConfig : використовує
+AnnotationApi ..> ApiConfig : використовує
+
+ApiConfig ..> Cookies : читає токен
+
+UserApi --> BackendAPI : HTTP
+AnnotationApi --> BackendAPI : HTTP
+BackendAPI --> Storage : зберігає файли
+
+@enduml
+
